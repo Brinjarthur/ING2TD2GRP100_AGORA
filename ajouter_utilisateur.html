@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ajouter un utilisateur ou un article</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+    <script>
+        function updateTypeVente() {
+            var typeVente = document.getElementById("type_de_vente").value;
+            var champsEnchere = document.getElementsByClassName("champs_enchere");
+
+            if (typeVente === "enchere") {
+                for (var i = 0; i < champsEnchere.length; i++) {
+                    champsEnchere[i].style.display = "table-row";
+                }
+            } else {
+                for (var i = 0; i < champsEnchere.length; i++) {
+                    champsEnchere[i].style.display = "none";
+                }
+            }
+        }
+
+        function checkFormSubmission(event) {
+            var pseudo = document.getElementById("pseudo").value;
+            var nouveauMotDePasse = document.getElementById("nouveau_mot_de_passe").value;
+            var mail = document.getElementById("mail").value;
+            var typeDeCompte = document.getElementById("nouveau_type_de_compte").value;
+
+            if (!pseudo || !nouveauMotDePasse || !mail || !typeDeCompte) {
+                alert("Tous les champs doivent être remplis !");
+                event.preventDefault();
+                return false;
+            }
+
+            // Validation de l'email
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(mail)) {
+                alert("Veuillez entrer une adresse email valide !");
+                event.preventDefault();
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <h1>Agora Francia</h1>
+            <img src="logo.png" alt="Logo Agora">
+        </header>
+        <nav class="navigation">
+            <ul>
+                <li><a href="Accueil.html?identifiant=<?php echo $_SESSION['identifiant']; ?>">Accueil</a></li>
+                <li><a href="ToutParcourir.html?identifiant=<?php echo $_SESSION['identifiant']; ?>">Tout Parcourir</a></li>
+                <li><a href="Notifications.html?identifiant=<?php echo $_SESSION['identifiant']; ?>">Notifications</a></li>
+                <li><a href="Panier.html?identifiant=<?php echo $_SESSION['identifiant']; ?>">Panier</a></li>
+                <li><a href="VotreCompte.html?identifiant=<?php echo $_SESSION['identifiant']; ?>" class="active">Votre Compte</a></li>
+            </ul>
+        </nav>
+        <section class="section">
+            <h1>Ajouter un nouvel utilisateur</h1>
+            <form method="post" action="ajouter_utilisateur.php" onsubmit="return checkFormSubmission(event)">
+                <table>
+                    <tr>
+                        <td><label for="pseudo">Pseudo :</label></td>
+                        <td><input type="text" id="pseudo" name="pseudo" required></td>
+                    </tr>
+                    <tr>
+                        <td><label for="nouveau_mot_de_passe">Mot de passe :</label></td>
+                        <td><input type="password" id="nouveau_mot_de_passe" name="nouveau_mot_de_passe" required></td>
+                    </tr>
+                    <tr>
+                        <td><label for="mail">Email :</label></td>
+                        <td><input type="email" id="mail" name="mail" required></td>
+                    </tr>
+                    <tr>
+                        <td><label for="nouveau_type_de_compte">Type de compte :</label></td>
+                        <td>
+                            <select id="nouveau_type_de_compte" name="nouveau_type_de_compte" required>
+                                <option value="administrateur">Administrateur</option>
+                                <option value="vendeur">Vendeur</option>
+                                <option value="acheteur">Acheteur</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: center;">
+                            <input type="submit" name="ajouter_utilisateur" value="Ajouter Utilisateur">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </section>
+    </div>
+    <footer class="footer">
+        <p>© 2024 Agora Francia. Tous droits réservés.</p>
+        <p>Contactez-nous: email@agorafrancia.com | +33 1 23 45 67 89 | 3 rue du bief Verdun-Sur-Le-Doubs 71350</p>
+    </footer>
+</body>
+</html>
