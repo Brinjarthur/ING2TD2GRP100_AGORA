@@ -23,30 +23,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajouter_utilisateur'])
     }
 
     // Récupérer les données du formulaire
-    $nouvel_identifiant = $_POST['nouvel_identifiant'];
-    $nouveau_mot_de_passe = $_POST['nouveau_mot_de_passe'];
-    $nouveau_type_de_compte = $_POST['nouveau_type_de_compte'];
+    $pseudo = isset($_POST['pseudo']) ? $_POST['pseudo'] : '';
+    $nouveau_mot_de_passe = isset($_POST['nouveau_mot_de_passe']) ? $_POST['nouveau_mot_de_passe'] : '';
+    $mail = isset($_POST['mail']) ? $_POST['mail'] : '';
+    $nouveau_type_de_compte = isset($_POST['nouveau_type_de_compte']) ? $_POST['nouveau_type_de_compte'] : '';
 
     // Prévenir les injections SQL
-    $nouvel_identifiant = $db_handle->real_escape_string($nouvel_identifiant);
+    $pseudo = $db_handle->real_escape_string($pseudo);
     $nouveau_mot_de_passe = $db_handle->real_escape_string($nouveau_mot_de_passe);
+    $mail = $db_handle->real_escape_string($mail);
 
-    // Requête SQL pour insérer le nouvel utilisateur dans la base de données
-    $sql_insert_utilisateur = "INSERT INTO utilisateurs (identifiant, mot_de_passe, type_de_compte) VALUES ('$nouvel_identifiant', '$nouveau_mot_de_passe', '$nouveau_type_de_compte')";
-    $result_insert_utilisateur = mysqli_query($db_handle, $sql_insert_utilisateur);
-    if ($result_insert_utilisateur) {
-        // Récupérer les informations de l'utilisateur ajouté
-        $sql_get_utilisateur = "SELECT * FROM utilisateurs WHERE identifiant='$nouvel_identifiant'";
-        $result_get_utilisateur = mysqli_query($db_handle, $sql_get_utilisateur);
-        $utilisateur_ajoute = mysqli_fetch_assoc($result_get_utilisateur);
+    if (!empty($pseudo) && !empty($nouveau_mot_de_passe) && !empty($mail) && !empty($nouveau_type_de_compte)) {
+        // Requête SQL pour insérer le nouvel utilisateur dans la base de données
+        $sql_insert_utilisateur = "INSERT INTO utilisateurs (pseudo, mot_de_passe, mail, type_de_compte) VALUES ('$pseudo', '$nouveau_mot_de_passe', '$mail', '$nouveau_type_de_compte')";
+        $result_insert_utilisateur = mysqli_query($db_handle, $sql_insert_utilisateur);
+        if ($result_insert_utilisateur) {
+            // Récupérer les informations de l'utilisateur ajouté
+            $sql_get_utilisateur = "SELECT * FROM utilisateurs WHERE pseudo='$pseudo'";
+            $result_get_utilisateur = mysqli_query($db_handle, $sql_get_utilisateur);
+            $utilisateur_ajoute = mysqli_fetch_assoc($result_get_utilisateur);
 
-        // Générer le message de confirmation avec les informations de l'utilisateur ajouté
-        $message = "Nouvel utilisateur ajouté avec succès. Voici les informations :<br>";
-        $message .= "Identifiant : " . $utilisateur_ajoute['identifiant'] . "<br>";
-        $message .= "Type de compte : " . $utilisateur_ajoute['type_de_compte'] . "<br>";
+            // Générer le message de confirmation avec les informations de l'utilisateur ajouté
+            $message = "Nouvel utilisateur ajouté avec succès. Voici les informations :<br>";
+            $message .= "Pseudo : " . $utilisateur_ajoute['pseudo'] . "<br>";
+            $message .= "Mail : " . $utilisateur_ajoute['mail'] . "<br>";
+            $message .= "Type de compte : " . $utilisateur_ajoute['type_de_compte'] . "<br>";
+        } else {
+            // Gérer l'erreur lors de l'ajout de l'utilisateur
+            $erreur = "Erreur lors de l'ajout de l'utilisateur.";
+        }
     } else {
-        // Gérer l'erreur lors de l'ajout de l'utilisateur
-        $erreur = "Erreur lors de l'ajout de l'utilisateur.";
+        $erreur = "Tous les champs doivent être remplis.";
     }
 }
 ?>
@@ -64,6 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajouter_utilisateur'])
         <h1 style="color: red;"><?php echo $erreur; ?></h1>
     <?php } ?>
 
-    <a href="formulaire_ajout_utilisateur.php">Retour au formulaire</a>
+    <a href="ajouter_utilisateur.html">Retour au formulaire</a>
 </body>
 </html>
