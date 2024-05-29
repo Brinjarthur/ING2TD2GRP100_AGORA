@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agora Francia - Notifications</title>
+    <title>Connexion - Agora Francia</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -24,7 +24,24 @@
         <section class="section">
             <h2>Bienvenue sur Agora Francia</h2>
             <p>Votre Compte</p>
-            <!-- Ajoutez plus de contenu ici -->
+
+            <form class="login-form" action="login.php" method="post">
+                <table>
+                    <tr>
+                        <td><label for="identifiant">Identifiant ou Pseudo:</label></td>
+                        <td><input type="text" id="identifiant" name="identifiant" required></td>
+                    </tr>
+                    <tr>
+                        <td><label for="motdepasse">Mot de passe:</label></td>
+                        <td><input type="password" id="motdepasse" name="motdepasse" required></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: center;">
+                            <button type="submit">Connexion</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
         </section>
         <footer class="footer">
             <p>© 2024 Agora Francia. Tous droits réservés.</p>
