@@ -1,0 +1,154 @@
+<?php
+session_start();
+
+// Ajouter un article au panier
+if (isset($_POST['ajouter_au_panier'])) {
+    $id_article = $_POST['id_article'];
+    $nom = $_POST['nom'];
+    $prix = $_POST['prix'];
+    $image = $_POST['image'];
+
+    $article = [
+        'id' => $id_article,
+        'nom' => $nom,
+        'prix' => $prix,
+        'image' => $image
+    ];
+
+    if (!isset($_SESSION['panier'])) {
+        $_SESSION['panier'] = [];
+    }
+
+    $_SESSION['panier'][] = $article;
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agora Francia - Tout Parcourir</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function filterItems() {
+            var rarete = document.getElementById('item-filter-rarete').value;
+            var type_vente = document.getElementById('item-filter-type').value;
+
+            var items = document.querySelectorAll('.item');
+            items.forEach(function(item) {
+                var itemRarete = item.dataset.rarete;
+                var itemType = item.dataset.type;
+
+                if ((rarete === 'all' || itemRarete === rarete) &&
+                    (type_vente === 'all' || itemType === type_vente)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <h1>Agora Francia</h1>
+            <img src="logo.png" alt="Logo Agora">
+        </header>
+        <nav class="navigation">
+            <ul>
+                <li><a href="Accueil.html">Accueil</a></li>
+                <li><a href="ToutParcourir.php" class="active">Tout Parcourir</a></li>
+                <li><a href="Notifications.html">Notifications</a></li>
+                <li><a href="Panier.php">Panier</a></li>
+                <li><a href="VotreCompte.html">Votre Compte</a></li>
+            </ul>
+        </nav>
+        <section class="section">
+            <h2>Bienvenue sur Agora Francia</h2>
+            <p>Choisissez une catégorie et explorez nos articles en vente.</p>
+
+            <!-- Menu déroulant pour filtrer les articles -->
+            <label for="item-filter-rarete">Filtrer par type d'article:</label>
+            <select id="item-filter-rarete" onchange="filterItems()">
+                <option value="all">Tous les articles</option>
+                <option value="rare">Articles rares</option>
+                <option value="haut-de-gamme">Articles haut de gamme</option>
+                <option value="regulier">Articles réguliers</option>
+            </select>
+
+            <label for="item-filter-type">Filtrer par type de vente:</label>
+            <select id="item-filter-type" onchange="filterItems()">
+                <option value="all">Tous les types de vente</option>
+                <option value="immediat">Achat immédiat</option>
+                <option value="vendeur_client">Transaction vendeur-client</option>
+                <option value="enchere">Meilleure offre</option>
+            </select>
+
+            <?php
+            // Connectez-vous à la base de données
+            $db_handle = mysqli_connect('localhost', 'root', 'Yoda,2004');
+            $db_found = mysqli_select_db($db_handle, 'projets2');
+
+            // Vérifiez si la connexion à la base de données est réussie
+            if (!$db_handle || !$db_found) {
+                die("Erreur de connexion à la base de données.");
+            }
+
+            // Fonction pour afficher les articles d'une sous-catégorie spécifique
+            function afficher_articles($db_handle, $type_vente, $rarete) {
+                $sql = "SELECT * FROM article WHERE type_vente = '$type_vente' AND rarete = '$rarete'";
+                $result = mysqli_query($db_handle, $sql);
+
+                if (mysqli_num_rows($result) > 0) {
+                    echo '<div class="items">';
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo '<div class="item" data-rarete="'.$row["rarete"].'" data-type="'.$row["type_vente"].'">';
+                        echo '<img src="'.$row["image"].'" alt="'.$row["nom"].'">';
+                        echo '<p><strong>Numero identification:</strong> '.$row["id_article"].'</p>';
+                        echo '<p><strong>Nom:</strong> '.$row["nom"].'</p>';
+                        echo '<p><strong>Description:</strong> '.$row["description"].'</p>';
+                        echo '<p><strong>Prix:</strong> '.$row["prix"].' €</p>';
+                        echo '<form method="post" action="ToutParcourir.php">';
+                        echo '<input type="hidden" name="id_article" value="'.$row["id_article"].'">';
+                        echo '<input type="hidden" name="nom" value="'.$row["nom"].'">';
+                        echo '<input type="hidden" name="prix" value="'.$row["prix"].'">';
+                        echo '<input type="hidden" name="image" value="'.$row["image"].'">';
+                        echo '<button type="submit" name="ajouter_au_panier">Ajouter au panier</button>';
+                        echo '</form>';
+                        echo '</div>';
+                    }
+                    echo '</div>';
+                } else {
+                    echo "Aucun article trouvé.";
+                }
+            }
+
+            // Afficher les articles pour chaque catégorie et sous-catégorie
+            $types_vente = ['immediat', 'vendeur_client', 'enchere'];
+            $raretes = ['rare', 'haut-de-gamme', 'regulier'];
+
+            foreach ($types_vente as $type_vente) {
+                echo '<div class="category">';
+                echo '<h3>'.$type_vente.'</h3>';
+                foreach ($raretes as $rarete) {
+                    echo '<div class="sub-category" data-category="'.$rarete.'">';
+                    echo '<h4>Articles '.str_replace('-', ' ', $rarete).'</h4>';
+                    afficher_articles($db_handle, $type_vente, $rarete);
+                    echo '</div>';
+                }
+                echo '</div>';
+            }
+
+            // Fermer la connexion
+            mysqli_close($db_handle);
+            ?>
+
+        </section>
+        <footer class="footer">
+            <p>© 2024 Agora Francia. Tous droits réservés.</p>
+            <p>Contactez-nous: email@agorafrancia.com | +33 1 23 45 67 89</p>
+        </footer>
+    </div>
+</body>
+</html>
