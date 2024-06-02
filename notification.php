@@ -86,6 +86,36 @@ $result_notifications = $db_handle->query($sql_notifications);
 
             $db_handle->close();
             ?>
+            <h2>Ajouter une notification</h2>
+            <form method="post" action="traitement_notification.php">
+                <!-- Champ caché pour l'ID utilisateur -->
+                <input type="hidden" id="id_utilisateur" name="id_utilisateur" value="<?php echo $_SESSION['id_utilisateur']; ?>">
+
+                <label for="prix">Prix :</label>
+                <input type="text" id="prix" name="prix" required><br><br>
+
+                <label for="type">Type :</label>
+                <select id="type" name="type" required>
+                    <option value="voiture de collection">Voiture de collection</option>
+                    <option value="voiture">Voiture</option>
+                    <option value="voiture de sport">Voiture de sport</option>
+                </select><br><br>
+
+                <label for="rarete">Rareté :</label>
+                <select id="rarete" name="rarete" required>
+                    <option value="rare">Rare</option>
+                    <option value="regulier">Régulier</option>
+                    <option value="haut_de_gamme">Haut de gamme</option>
+                </select><br><br>
+
+                <button type="submit" name="submit">Ajouter Notification</button>
+            </form>
             
+        </section>
+        <footer class="footer">
+            <p>© 2024 Agora Francia. Tous droits réservés.</p>
+            <p>Contactez-nous: email@agorafrancia.com | +33 1 23 45 67 89</p>
+        </footer>
+    </div>
 </body>
 </html>
